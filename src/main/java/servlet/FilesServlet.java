@@ -12,14 +12,13 @@ import java.util.Date;
 
 @WebServlet("/files")
 public class FilesServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getParameter("path");
 
-
         File directory = new File(path);
         File[] files = directory.listFiles();
-
 
         req.setAttribute("basePath", directory.getAbsolutePath());
         req.setAttribute("files", files);
@@ -28,5 +27,4 @@ public class FilesServlet extends HttpServlet {
         RequestDispatcher view = req.getRequestDispatcher("files.jsp");
         view.forward(req, resp);
     }
-
 }

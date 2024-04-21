@@ -1,6 +1,5 @@
 package servlet;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,8 +11,9 @@ import java.io.OutputStream;
 
 @WebServlet("/download")
 public class DownloadServlet extends HttpServlet {
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getParameter("path");
 
         File file = new File(path);
@@ -30,19 +30,16 @@ public class DownloadServlet extends HttpServlet {
             String header = String.format("attachment; filename=\"%s\"", file.getName());
             resp.setHeader("Content-Disposition", header);
 
-            FileInputStream in = new FileInputStream(file);
-            OutputStream out = resp.getOutputStream();
+            try (FileInputStream in = new FileInputStream(file)) {
+                try (OutputStream out = resp.getOutputStream()) {
+                    byte[] buffer = new byte[4096];
 
-            byte[] buffer = new byte[4096];
-
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
             }
-
-            in.close();
-            out.close();
         }
     }
-
 }
